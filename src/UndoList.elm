@@ -17,7 +17,7 @@ module UndoList where
 @docs map, mapPresent, update, connect, reduce, foldl, foldr, reverse, flatten, flatMap, andThen, map2, andMap
 
 # Shorthands
-@docs foldp, mailbox
+@docs view, foldp, mailbox
 
 # Conversions
 @docs toList, fromList
@@ -224,6 +224,8 @@ map f {past, present, future} =
   UndoList (List.map f past) (f present) (List.map f future)
 
 
+{-| Map a function over a pair of undo-lists.
+-}
 map2 : (a -> b -> c) -> UndoList a -> UndoList b -> UndoList c
 map2 f undoListA undoListB =
   UndoList
@@ -232,6 +234,10 @@ map2 f undoListA undoListB =
     (List.map2 f undoListA.future undoListB.future)
 
 
+{-| Map a function over any number of undo-lists.
+
+    map f xs `andMap` ys `andMap` zs
+-}
 andMap : UndoList (a -> b) -> UndoList a -> UndoList b
 andMap =
   map2 (<|)
@@ -306,7 +312,7 @@ reverse {past, present, future} =
   UndoList future present past
 
 
-{-| Flatten an undo-list.
+{-| Flatten an undo-list of undo-lists into a single undo-list.
 -}
 flatten : UndoList (UndoList a) -> UndoList a
 flatten {past, present, future} =
@@ -316,11 +322,14 @@ flatten {past, present, future} =
     (present.future ++ List.concatMap toList future)
 
 
+{-| Map over an undo-list and then flatten the result.
+-}
 flatMap : (a -> UndoList b) -> UndoList a -> UndoList b
 flatMap f =
   map f >> flatten
 
-
+{-| Chain undo-list operations.
+-}
 andThen : UndoList a -> (a -> UndoList b) -> UndoList b
 andThen =
   flip flatMap

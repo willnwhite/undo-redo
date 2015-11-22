@@ -28,11 +28,11 @@ action decoder =
       unionDecoder =
         customDecoder string <|
           \str ->
-            if  | str == "Reset"  -> Ok Reset
-                | str == "Redo"   -> Ok Redo
-                | str == "Undo"   -> Ok Undo
-                | str == "Forget" -> Ok Forget
-                | otherwise       -> Err (str ++ " is not a valid undolist action")
+            if      str == "Reset"  then Ok Reset
+            else if str == "Redo"   then Ok Redo
+            else if str == "Undo"   then Ok Undo
+            else if str == "Forget" then Ok Forget
+            else Err (str ++ " is not a valid undolist action")
 
   in
       oneOf
