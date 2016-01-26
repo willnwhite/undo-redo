@@ -142,13 +142,13 @@ reset {past, present} =
 -}
 hasPast : UndoList state -> Bool
 hasPast =
-  .past >> List.isEmpty
+  not << List.isEmpty << .past
 
 {-| Check if the undo-list has any future states.
 -}
 hasFuture : UndoList state -> Bool
 hasFuture =
-  .future >> List.isEmpty
+  not << List.isEmpty << .future
 
 
 {-| Get the full length of an undo-list
