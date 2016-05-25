@@ -1,4 +1,4 @@
-module UndoList.Random where
+module UndoList.Random exposing (undolist, action)
 {-| Random UndoList Submodule.
 
 Provides random undolist and undolist action generators.
@@ -9,8 +9,8 @@ Provides random undolist and undolist action generators.
 
 
 import UndoList     exposing (UndoList, Action(..))
-import Random       exposing (Generator, list)
-import Random.Extra exposing (map, map3, frequency, constant)
+import Random       exposing (Generator, list, map, map3)
+import Random.Extra exposing (frequency, constant)
 
 
 {-| Random UndoList Generator constructor.

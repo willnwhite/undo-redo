@@ -1,4 +1,4 @@
-module UndoList.Shrink where
+module UndoList.Shrink exposing (undolist, action)
 {-| Shrink UndoList Submodule.
 
 Provides shrinking strategies for timelines and actions.

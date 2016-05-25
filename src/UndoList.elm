@@ -1,4 +1,4 @@
-module UndoList where
+module UndoList exposing (..)
 {-| UndoList Data Structure.
 
 # Definition
@@ -17,14 +17,13 @@ module UndoList where
 @docs map, mapPresent, update, connect, reduce, foldl, foldr, reverse, flatten, flatMap, andThen, map2, andMap
 
 # Shorthands
-@docs view, foldp, mailbox
+@docs view
 
 # Conversions
 @docs toList, fromList
 -}
 
 import List
-import Signal exposing (Signal, Address, Mailbox)
 
 
 -------------------
@@ -365,42 +364,11 @@ Then, you could construct the main function as follows:
         (Signal.foldp (UndoList.update update) (UndoList.fresh initial) signal)
 
 -}
-view : (Address (Action action) -> state -> view) -> (Address (Action action) -> UndoList state -> view)
-view viewer address {present} =
-  viewer address present
+view : (state -> view) -> UndoList state -> view
+view viewer { present } =
+    viewer present
 
 
-{-| Analog of Signal.foldp
-
-This shorthand is defined simple as follows:
-
-    foldp update initial =
-      Signal.foldp (update update) (fresh initial)
-
-This allows you to foldp on undo-lists without having to explicitly sprinkle
-in undolist-specific code.
--}
-foldp : (action -> state -> state) -> state -> Signal (Action action) -> Signal (UndoList state)
-foldp updater initial =
-  Signal.foldp (update updater) (fresh initial)
-
-
-{-| Shorthand for
-
-    Signal.mailbox << New
-
-Allows you to create a mailbox of undo-list actions given an action.
-
-In many cases, you might be better off just doing:
-
-    myMailbox = Signal.mailbox Reset
-
-This allows you to avoid the problem of coming up with an initial value for
-your mailbox.
--}
-mailbox : action -> Mailbox (Action action)
-mailbox action =
-  Signal.mailbox (New action)
 
 
 -----------------

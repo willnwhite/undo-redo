@@ -1,4 +1,4 @@
-module UndoList.Encode where
+module UndoList.Encode exposing (undolist, action)
 {-| Encode UndoList submodule.
 
 Provides JSON encoders for Timelines and UndoList Actions.
