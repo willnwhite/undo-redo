@@ -9,23 +9,21 @@ import UndoList as UL exposing (UndoList, Action(..))
 
 init = 0
 
-type Msg
-  = Increment
-
-update msg state =
-  case msg of
-    Increment ->
-        state + 1
+update _ state =
+  state + 1
 
 view state =
   div
       []
       [ button
-            [ onClick (New Increment) ]
+            [ onClick (New ()) ]
             [ text "Increment" ]
       , button
             [ onClick Undo ]
             [ text "Undo" ]
+      , button
+            [ onClick Redo ]
+            [ text "Redo" ]
       , div
             []
             [ text (toString state) ]
@@ -36,7 +34,7 @@ main =
   Html.beginnerProgram
     { model = UL.fresh init
     , update = UL.update update
-    , view = view
+    , view = UL.view view
     }
 
 
@@ -45,22 +43,17 @@ main =
 -- Version without undo support --
 ----------------------------------
 
-{-}
+{--
 init = 0
 
-type Msg
-  = Increment
-
-update msg state =
-  case msg of
-    Increment ->
-        state + 1
+update _ state =
+  state + 1
 
 view state =
   div
       []
       [ button
-            [ onClick Increment ]
+            [ onClick () ]
             [ text "Increment" ]
       , div
             []
@@ -74,4 +67,4 @@ main =
     , update = update
     , view = view
     }
--}
+--}

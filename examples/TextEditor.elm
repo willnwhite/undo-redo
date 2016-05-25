@@ -8,8 +8,8 @@ import UndoList as UL exposing (Action(..), UndoList)
 -- View Function --
 -------------------
 
-view : UndoList Model -> Html (UL.Action Msg)
-view {present} =
+view : Model -> Html (UL.Action Msg)
+view model =
   let
       button value =
         Html.button
@@ -53,7 +53,7 @@ view {present} =
       textArea =
         Html.textarea
             [ onInput (New << UpdateContent)
-            , value present.content
+            , value model.content
             , placeholder "Enter text here..."
             , style
                 [ "flex"        => "1"
@@ -116,7 +116,7 @@ main =
   Html.beginnerProgram
     { model = UL.fresh init
     , update = UL.update update
-    , view = view
+    , view = UL.view view
     }
 
 ----------------------
