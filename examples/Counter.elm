@@ -1,35 +1,43 @@
-import Html
+import Html exposing (..)
+import Html.App as Html
 import Html.Events exposing (onClick)
-import Signal exposing (mailbox)
-import UndoList exposing (UndoList, Action(..))
+import UndoList as UL exposing (UndoList, Action(..))
 
 -------------------------------
 -- Version with undo support --
 -------------------------------
 
-initial = 0
+init = 0
 
-update _ state = state + 1
+type Msg
+  = Increment
 
-view address state =
-  Html.div
+update msg state =
+  case msg of
+    Increment ->
+        state + 1
+
+view state =
+  div
       []
-      [ Html.button
-            [ onClick address (New ()) ]
-            [ Html.text "Increment" ]
-      , Html.button
-            [ onClick address Undo ]
-            [ Html.text "Undo" ]
-      , Html.div
+      [ button
+            [ onClick (New Increment) ]
+            [ text "Increment" ]
+      , button
+            [ onClick Undo ]
+            [ text "Undo" ]
+      , div
             []
-            [ Html.text (toString state) ]
+            [ text (toString state) ]
       ]
 
-{address, signal} = mailbox Reset
 
 main =
-  Signal.map (UndoList.view view address)
-    (Signal.foldp (UndoList.update update) (UndoList.fresh initial) signal)
+  Html.beginnerProgram
+    { model = UL.fresh init
+    , update = UL.update update
+    , view = view
+    }
 
 
 
@@ -38,28 +46,32 @@ main =
 ----------------------------------
 
 {-}
-import Html
-import Html.Events exposing (onClick)
-import Signal exposing (mailbox)
+init = 0
 
-initial = 0
+type Msg
+  = Increment
 
-update _ state = state + 1
+update msg state =
+  case msg of
+    Increment ->
+        state + 1
 
-view address state =
-  Html.div
+view state =
+  div
       []
-      [ Html.button
-            [ onClick address () ]
-            [ Html.text "Increment" ]
-      , Html.div
+      [ button
+            [ onClick Increment ]
+            [ text "Increment" ]
+      , div
             []
-            [ Html.text (toString state) ]
+            [ text (toString state) ]
       ]
 
-{address, signal} = mailbox ()
 
 main =
-  Signal.map (view address)
-    (Signal.foldp update initial signal)
+  Html.beginnerProgram
+    { model = init
+    , update = update
+    , view = view
+    }
 -}
