@@ -26,26 +26,26 @@ We will start with a very simple counter application. There is a button, and whe
 
 ```elm
 -- BEFORE
-import Html
+import Html exposing (div, button, text)
 import Html.Events exposing (onClick)
-import StartApp
+import Html.App as Html
 
 main =
-  StartApp.start
+  Html.beginnerProgram
     { model = 0, view = view, update = update }
 
 update _ model =
   model + 1
 
-view address model =
-  Html.div
+view model =
+  div
       []
-      [ Html.button
-          [ onClick address () ]
-          [ Html.text "Increment" ]
-      , Html.div
+      [ button
+          [ onClick () ]
+          [ text "Increment" ]
+      , div
           []
-          [ Html.text (toString model) ]
+          [ text (toString model) ]
       ]
 ```
 
@@ -55,30 +55,30 @@ The next code block is the same program updated to use the `UndoList` module to 
 
 ```elm
 -- AFTER
-import Html
+import Html exposing (div, button, text)
 import Html.Events exposing (onClick)
-import StartApp
+import Html.App as Html
 import UndoList as UL
 
 main =
-  StartApp.start
+  Html.beginnerProgram
     { model = UL.fresh 0, view = UL.view view, update = UL.update update }
 
 update _ model =
   model + 1
 
-view address model =
-  Html.div
+view model =
+  div
       []
-      [ Html.button
+      [ button
           [ onClick address (UL.New ()) ]
-          [ Html.text "Increment" ]
-      , Html.button
+          [ text "Increment" ]
+      , button
           [ onClick address UL.Undo ]
-          [ Html.text "Undo" ]
-      , Html.div
+          [ text "Undo" ]
+      , div
           []
-          [ Html.text (toString model) ]
+          [ text (toString model) ]
       ]
 ```
 
