@@ -71,10 +71,10 @@ view model =
   div
       []
       [ button
-          [ onClick address (UL.New ()) ]
+          [ onClick (UL.New ()) ]
           [ text "Increment" ]
       , button
-          [ onClick address UL.Undo ]
+          [ onClick UL.Undo ]
           [ text "Undo" ]
       , div
           []
