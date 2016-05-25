@@ -1,26 +1,26 @@
 import Html exposing (Html)
-import Html.Events exposing (on, targetValue, onClick)
+import Html.App as Html
+import Html.Events exposing (onInput, onClick)
 import Html.Attributes exposing (style, value, placeholder)
-import Signal exposing (Signal, Address, Mailbox, mailbox)
-import UndoList exposing (Action(..))
+import UndoList as UL exposing (Action(..), UndoList)
 
 -------------------
 -- View Function --
 -------------------
 
-view : Address (Action String) -> String -> Html
-view address state =
+view : UndoList Model -> Html (UL.Action Msg)
+view {present} =
   let
       button value =
         Html.button
-            [ onClick address value
+            [ onClick value
             , style
                 [ "width"     => "8em"
                 , "height"    => "3em"
                 , "font-size" => "14pt"
                 ]
             ]
-            [ Html.text (toString value) ]
+            [ Html.text <| toString value ]
 
       undoButton =
         button Undo
@@ -52,8 +52,8 @@ view address state =
 
       textArea =
         Html.textarea
-            [ on "input" targetValue (New >> Signal.message address)
-            , value state
+            [ onInput (New << UpdateContent)
+            , value present.content
             , placeholder "Enter text here..."
             , style
                 [ "flex"        => "1"
@@ -83,37 +83,45 @@ view address state =
 -------------------
 -- Initial State --
 -------------------
+
+type alias Model =
+  { content : String }
+
 -- The initial state of the entire application
-initial : String
-initial = ""
+init : Model
+init = { content = "" }
 
 ------------------
 -- Update State --
 ------------------
 
+type Msg
+  = UpdateContent String
+
 -- Update current state by replacing it with the input.
-update : String -> String -> String
-update action _ = action
+update : Msg -> Model -> Model
+update msg model =
+  case msg of
+    UpdateContent str ->
+      { content = str }
 
--------------
--- Mailbox --
--------------
-
--- This is a mailbox of UndoList.Action
-{address, signal} = mailbox Reset
 
 ----------
 -- Main --
 ----------
 
 -- The main function.
-main : Signal Html
+main : Program Never
 main =
-  Signal.map (UndoList.view view address)
-    (UndoList.foldp update initial signal)
+  Html.beginnerProgram
+    { model = UL.fresh init
+    , update = UL.update update
+    , view = view
+    }
 
 ----------------------
 -- Helper Functions --
 ----------------------
 
+(=>) : String -> String -> (String, String)
 (=>) = (,)
