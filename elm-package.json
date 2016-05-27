@@ -1,7 +1,7 @@
 {
-    "version": "1.0.1",
+    "version": "1.0.0",
     "summary": "Easy undo in Elm",
-    "repository": "https://github.com/elm-community/elm-undo-redo.git",
+    "repository": "https://github.com/elm-community/undo-redo.git",
     "license": "BSD3",
     "source-directories": [
         "src"

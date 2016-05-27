@@ -120,4 +120,4 @@ This lets you write a normal `update` function and then upgrade it to a function
 
 The API has a lot more cool stuff, so [check it out][docs].
 
-[docs]: http://package.elm-lang.org/packages/TheSeamau5/elm-undo-redo/latest
+[docs]: http://package.elm-lang.org/packages/elm-community/undo-redo/latest
