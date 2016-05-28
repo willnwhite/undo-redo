@@ -86,34 +86,34 @@ The code is almost *exactly* the same!
 
 When we start the app, we simply add a couple wrappers to handle all of the undo/redo functionality. Notice that the addition of the functions `UL.fresh`, `UL.view`, and `UL.update` is a totally mechanical augmentation.
 
-As for the actual code, we added another button to our view that reports an `Undo` action and we wrapped up the increment event with `New`. In other words, the bare essentials needed to describe the user facing functionality.
+As for the actual code, we added another button to our view that reports an `Undo` message and we wrapped up the increment event with `New`. In other words, the bare essentials needed to describe the user facing functionality.
 
 The crazy thing is that this same pattern will work no matter how large your app gets. You do not have to think about any nasty details of undo/redo. Just make a tiny number of additions and the vast majority of the code stays exactly the same!
 
 
 ## More Details
 
-This API is designed to work really nicely with [The Elm Architecture][arch] by exposing an `Action` type that can easily be added to your existing ones:
+This API is designed to work really nicely with [The Elm Architecture][arch] by exposing an `Msg` type that can easily be added to your existing ones:
 
 [arch]: https://github.com/evancz/elm-architecture-tutorial/
 
 ```elm
-type Action subaction
+type Msg subMsg
     = Reset
     | Redo
     | Undo
     | Forget
-    | New subaction
+    | New subMsg
 ```
 
-You can specify all the normal actions of your application with `New` but you now have `Undo`, `Redo`, etc.
+You can specify all the normal messages of your application with `New` but you now have `Undo`, `Redo`, etc.
 
-This becomes really powerful when paired with `update` which handles all of the `UndoList` actions seamlessly.
+This becomes really powerful when paired with `update` which handles all of the `UndoList` messages seamlessly.
 
 ```elm
 update
-  : (action -> model -> model)
-  -> (Action action -> UndoList model -> UndoList model)
+  : (msg -> model -> model)
+  -> (Msg msg -> UndoList model -> UndoList model)
 ```
 
 This lets you write a normal `update` function and then upgrade it to a function that works on `UndoLists`.
