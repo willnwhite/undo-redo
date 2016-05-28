@@ -10,8 +10,8 @@ module UndoList exposing (..)
 # Query UndoList
 @docs hasPast, hasFuture, length, lengthPast, lengthFuture
 
-# Actions
-@docs Action, mapAction
+# Messages
+@docs Msg, mapMsg
 
 # Functional Operations
 @docs map, mapPresent, update, connect, reduce, foldl, foldr, reverse, flatten, flatMap, andThen, map2, andMap
@@ -169,34 +169,34 @@ lengthFuture =
   .future >> List.length
 
 --------------------------
--- UndoList Action Type --
+-- UndoList Msg Type --
 --------------------------
 
-{-| Simple UndoList Action type. This is a simple type that can be used for
+{-| Simple UndoList Msg type. This is a simple type that can be used for
 most use cases. This works best when paired with the `update` function as
 `update` will perform the corresponding operations on the undolist automatically.
 
 Consider using your own data type only if you really need it.
 -}
-type Action action
+type Msg msg
   = Reset
   | Redo
   | Undo
   | Forget
-  | New action
+  | New msg
 
 
 
-{-| Map a function over an action.
+{-| Map a function over a msg.
 -}
-mapAction : (a -> b) -> Action a -> Action b
-mapAction f action =
-  case action of
+mapMsg : (a -> b) -> Msg a -> Msg b
+mapMsg f msg =
+  case msg of
     Reset -> Reset
     Redo  -> Redo
     Undo  -> Undo
     Forget -> Forget
-    New action' -> New (f action')
+    New msg' -> New (f msg')
 
 
 
@@ -256,17 +256,17 @@ the individual states of your system and treat undo/redo as an add on.
 Example:
 
     -- Your update function
-    update action state =
-      case action of
+    update msg state =
+      case msg of
         ... -- some implementation
 
     -- Your new update function
     update' = UndoList.update update
 
 -}
-update : (action -> state -> state) -> Action action -> UndoList state -> UndoList state
-update updater action undolist =
-  case action of
+update : (msg -> state -> state) -> Msg msg -> UndoList state -> UndoList state
+update updater msg undolist =
+  case msg of
     Reset ->
       reset undolist
 
@@ -278,8 +278,8 @@ update updater action undolist =
     Forget ->
       forget undolist
 
-    New action ->
-      new (updater action undolist.present) undolist
+    New msg ->
+      new (updater msg undolist.present) undolist
 
 {-| Alias for `foldl`
 -}
@@ -352,10 +352,10 @@ your actual view function.
 Suppose you define the following:
 
     initial : model
-    update : action -> model -> model
-    view : Address (UndoList.Action action) -> model -> view
-    address : Address (UndoList.Action action)
-    signal : Signal (UndoList.Action action)
+    update : msg -> model -> model
+    view : Address (UndoList.Msg msg) -> model -> view
+    address : Address (UndoList.Msg msg)
+    signal : Signal (UndoList.Msg msg)
 
 Then, you could construct the main function as follows:
 

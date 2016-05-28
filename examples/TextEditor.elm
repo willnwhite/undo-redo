@@ -2,13 +2,13 @@ import Html exposing (Html)
 import Html.App as Html
 import Html.Events exposing (onInput, onClick)
 import Html.Attributes exposing (style, value, placeholder)
-import UndoList as UL exposing (Action(..), UndoList)
+import UndoList as UL exposing (Msg(..), UndoList)
 
 -------------------
 -- View Function --
 -------------------
 
-view : Model -> Html (UL.Action Msg)
+view : Model -> Html (UL.Msg Msg)
 view model =
   let
       button value =

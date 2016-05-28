@@ -1,7 +1,7 @@
 import Html exposing (..)
 import Html.App as Html
 import Html.Events exposing (onClick)
-import UndoList as UL exposing (UndoList, Action(..))
+import UndoList as UL exposing (UndoList, Msg(..))
 
 -------------------------------
 -- Version with undo support --

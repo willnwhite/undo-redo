@@ -1,14 +1,14 @@
-module UndoList.Random exposing (undolist, action)
+module UndoList.Random exposing (undolist, msg)
 {-| Random UndoList Submodule.
 
-Provides random undolist and undolist action generators.
+Provides random undolist and undolist msg generators.
 
 # Generators
-@docs undolist, action
+@docs undolist, msg
 -}
 
 
-import UndoList     exposing (UndoList, Action(..))
+import UndoList     exposing (UndoList, Msg(..))
 import Random       exposing (Generator, list, map, map3)
 import Random.Extra exposing (frequency, constant)
 
@@ -27,9 +27,9 @@ undolist pastLength futureLength generator =
     (list futureLength generator)
 
 
-{-| Generate random undolist actions given an action generator.
+{-| Generate random undolist msgs given an msg generator.
 
-Generates actions with the following probabilities:
+Generates msgs with the following probabilities:
 
 - Reset  : 5%
 - Forget : 5%
@@ -37,8 +37,8 @@ Generates actions with the following probabilities:
 - Redo   : 30%
 - New    : 30%
 -}
-action : Generator action -> Generator (Action action)
-action generator =
+msg : Generator msg -> Generator (Msg msg)
+msg generator =
   frequency
     [ (1, constant Reset)
     , (1, constant Forget)

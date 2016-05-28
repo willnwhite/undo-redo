@@ -1,13 +1,13 @@
-module UndoList.Decode exposing (undolist, action)
+module UndoList.Decode exposing (undolist, msg)
 {-| Decode UndoList submodule.
 
-Provides JSON decoders for Timelines and UndoList Actions.
+Provides JSON decoders for Timelines and UndoList Messages.
 
 # Decoders
-@docs undolist, action
+@docs undolist, msg
 -}
 
-import UndoList     exposing (UndoList, Action(..))
+import UndoList     exposing (UndoList, Msg(..))
 import Json.Decode  exposing (Decoder, (:=), list, string, object3, oneOf, customDecoder)
 
 {-| Decode an undo-list given a decoder of state.
@@ -20,10 +20,10 @@ undolist state =
     ("future"   := list state)
 
 
-{-| Decode an undo-list action given a decoder of actions.
+{-| Decode an undo-list msg given a decoder of messages.
 -}
-action : Decoder action -> Decoder (Action action)
-action decoder =
+msg : Decoder msg -> Decoder (Msg msg)
+msg decoder =
   let
       unionDecoder =
         customDecoder string <|
@@ -32,7 +32,7 @@ action decoder =
             else if str == "Redo"   then Ok Redo
             else if str == "Undo"   then Ok Undo
             else if str == "Forget" then Ok Forget
-            else Err (str ++ " is not a valid undolist action")
+            else Err (str ++ " is not a valid undolist message")
 
   in
       oneOf

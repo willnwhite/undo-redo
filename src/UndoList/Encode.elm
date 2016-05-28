@@ -1,14 +1,14 @@
-module UndoList.Encode exposing (undolist, action)
+module UndoList.Encode exposing (undolist, msg)
 {-| Encode UndoList submodule.
 
-Provides JSON encoders for Timelines and UndoList Actions.
+Provides JSON encoders for Timelines and UndoList Messages.
 
 # Encoders
-@docs undolist, action
+@docs undolist, msg
 
 -}
 
-import UndoList     exposing (UndoList, Action(..))
+import UndoList     exposing (UndoList, Msg(..))
 import Json.Encode  exposing (Value, object, list, string)
 
 {-| Encode an undolist of JSON values.
@@ -27,15 +27,15 @@ undolist {past, present, future} =
 
 
 
-{-| Encode an UndoList Action of JSON values.
-Best paired with the `mapAction` function from UndoList.
+{-| Encode an UndoList Msg of JSON values.
+Best paired with the `mapMsg` function from UndoList.
 
-    encodeAction actionEncoder =
-      UndoList.mapAction actionEncoder >> action
+    encodeMsg msgEncoder =
+      UndoList.mapMsg msgEncoder >> msg
 -}
-action : Action Value -> Value
-action action' =
-  case action' of
+msg : Msg Value -> Value
+msg msg' =
+  case msg' of
     Reset ->
       string "Reset"
 

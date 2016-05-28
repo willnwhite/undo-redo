@@ -1,15 +1,15 @@
-module UndoList.Shrink exposing (undolist, action)
+module UndoList.Shrink exposing (undolist, msg)
 {-| Shrink UndoList Submodule.
 
-Provides shrinking strategies for timelines and actions.
+Provides shrinking strategies for timelines and messages.
 
 # Shrinkers
-@docs undolist, action
+@docs undolist, msg
 
 -}
 
 import Shrink   exposing (Shrinker, list)
-import UndoList exposing (UndoList, Action(..))
+import UndoList exposing (UndoList, Msg(..))
 import Lazy.List as Lazy exposing (LazyList)
 
 
@@ -41,12 +41,12 @@ undolist shrinker {past, present, future} =
 
 
 
-{-| Shrink an undo-list action given an action shrinker.
+{-| Shrink an undo-list msg given an msg shrinker.
 Considers `Reset` to be most minimal.
 -}
-action : Shrinker action -> Shrinker (Action action)
-action shrinker action' =
-  case action' of
+msg : Shrinker msg -> Shrinker (Msg msg)
+msg shrinker msg' =
+  case msg' of
     Reset ->
       Lazy.empty
 
@@ -59,6 +59,6 @@ action shrinker action' =
     Redo ->
       Lazy.fromList [ Undo, Forget, Reset ]
 
-    New action' ->
+    New msg' ->
       let head = Lazy.fromList <| [Undo, Redo, Forget, Reset]
-      in Lazy.append head (Lazy.map New (shrinker action'))
+      in Lazy.append head (Lazy.map New (shrinker msg'))
