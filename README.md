@@ -115,7 +115,7 @@ the same!
 This API is designed to work really nicely with [The Elm Architecture][arch] by
 exposing an `Msg` type that can easily be added to your existing ones:
 
-[arch]: https://github.com/evancz/elm-architecture-tutorial/
+[arch]: http://guide.elm-lang.org/architecture/index.html
 
 ```elm
 type Msg subMsg
