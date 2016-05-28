@@ -1,127 +1,133 @@
+module Main exposing (..)
+
 import Html exposing (Html)
 import Html.App as Html
 import Html.Events exposing (onInput, onClick)
 import Html.Attributes exposing (style, value, placeholder)
 import UndoList as UL exposing (Msg(..), UndoList)
 
--------------------
--- View Function --
--------------------
+
+-- View
+
 
 view : Model -> Html (UL.Msg Msg)
 view model =
-  let
-      button value =
-        Html.button
-            [ onClick value
-            , style
-                [ "width"     => "8em"
-                , "height"    => "3em"
-                , "font-size" => "14pt"
+    let
+        button value =
+            Html.button
+                [ onClick value
+                , style
+                    [ "width" => "8em"
+                    , "height" => "3em"
+                    , "font-size" => "14pt"
+                    ]
                 ]
-            ]
-            [ Html.text <| toString value ]
+                [ Html.text <| toString value ]
 
-      undoButton =
-        button Undo
+        undoButton =
+            button Undo
 
-      redoButton =
-        button Redo
+        redoButton =
+            button Redo
 
-      title =
-        Html.span
-            [ style
-                [ "font-size" => "16pt" ]
-            ]
-            [ Html.text "Simple Text Area with Undo/Redo support" ]
+        title =
+            Html.span
+                [ style [ "font-size" => "16pt" ]
+                ]
+                [ Html.text "Simple Text Area with Undo/Redo support" ]
 
-      headerArea =
+        headerArea =
+            Html.div
+                [ style
+                    [ "display" => "flex"
+                    , "justify-content" => "space-between"
+                    , "align-items" => "center"
+                    ]
+                ]
+                [ undoButton
+                , title
+                , redoButton
+                ]
+
+        textArea =
+            Html.textarea
+                [ onInput (New << UpdateContent)
+                , value model.content
+                , placeholder "Enter text here..."
+                , style
+                    [ "flex" => "1"
+                    , "font-size" => "24pt"
+                    , "font-family" => "Helvetica Neue, Helvetica, Arial, sans-serif"
+                    , "resize" => "none"
+                    ]
+                ]
+                []
+    in
         Html.div
             [ style
-                [ "display"         => "flex"
-                , "justify-content" => "space-between"
-                , "align-items"     => "center"
+                [ "position" => "absolute"
+                , "margin" => "0"
+                , "padding" => "0"
+                , "width" => "100vw"
+                , "height" => "100vh"
+                , "display" => "flex"
+                , "flex-direction" => "column"
                 ]
             ]
-            [ undoButton
-            , title
-            , redoButton
+            [ headerArea
+            , textArea
             ]
 
 
 
-      textArea =
-        Html.textarea
-            [ onInput (New << UpdateContent)
-            , value model.content
-            , placeholder "Enter text here..."
-            , style
-                [ "flex"        => "1"
-                , "font-size"   => "24pt"
-                , "font-family" => "Helvetica Neue, Helvetica, Arial, sans-serif"
-                , "resize"      => "none"
-                ]
-            ]
-            []
+-- Model
 
-  in
-      Html.div
-          [ style
-              [ "position"        => "absolute"
-              , "margin"          => "0"
-              , "padding"         => "0"
-              , "width"           => "100vw"
-              , "height"          => "100vh"
-              , "display"         => "flex"
-              , "flex-direction"  => "column"
-              ]
-          ]
-          [ headerArea
-          , textArea
-          ]
-
--------------------
--- Initial State --
--------------------
 
 type alias Model =
-  { content : String }
+    { content : String }
+
+
 
 -- The initial state of the entire application
-init : Model
-init = { content = "" }
 
-------------------
--- Update State --
-------------------
+
+init : Model
+init =
+    { content = "" }
+
+
+
+-- Update
+
 
 type Msg
-  = UpdateContent String
+    = UpdateContent String
 
--- Update current state by replacing it with the input.
+
 update : Msg -> Model -> Model
 update msg model =
-  case msg of
-    UpdateContent str ->
-      { content = str }
+    case msg of
+        UpdateContent str ->
+            { content = str }
 
 
-----------
--- Main --
-----------
 
--- The main function.
+-- Main
+
+
 main : Program Never
 main =
-  Html.beginnerProgram
-    { model = UL.fresh init
-    , update = UL.update update
-    , view = UL.view view
-    }
+    Html.beginnerProgram
+        { model = UL.fresh init
+        , update = UL.update update
+        , view = UL.view view
+        }
 
-----------------------
--- Helper Functions --
-----------------------
 
-(=>) : String -> String -> (String, String)
-(=>) = (,)
+
+-- Util
+
+
+(=>) : String -> String -> ( String, String )
+(=>) =
+    (,)
