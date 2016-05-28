@@ -31,22 +31,22 @@ import Html.Events exposing (onClick)
 import Html.App as Html
 
 main =
-  Html.beginnerProgram
-    { model = 0, view = view, update = update }
+    Html.beginnerProgram
+        { model = 0, view = view, update = update }
 
 update _ model =
-  model + 1
+    model + 1
 
 view model =
-  div
-      []
-      [ button
-          [ onClick () ]
-          [ text "Increment" ]
-      , div
-          []
-          [ text (toString model) ]
-      ]
+    div
+        []
+        [ button
+            [ onClick () ]
+            [ text "Increment" ]
+        , div
+            []
+            [ text (toString model) ]
+        ]
 ```
 
 Suppose that further down the line we decide it would be nice to have an undo button.
@@ -61,25 +61,25 @@ import Html.App as Html
 import UndoList as UL
 
 main =
-  Html.beginnerProgram
-    { model = UL.fresh 0, view = UL.view view, update = UL.update update }
+    Html.beginnerProgram
+        { model = UL.fresh 0, view = UL.view view, update = UL.update update }
 
 update _ model =
-  model + 1
+    model + 1
 
 view model =
-  div
-      []
-      [ button
-          [ onClick (UL.New ()) ]
-          [ text "Increment" ]
-      , button
-          [ onClick UL.Undo ]
-          [ text "Undo" ]
-      , div
-          []
-          [ text (toString model) ]
-      ]
+    div
+        []
+        [ button
+            [ onClick (UL.New ()) ]
+            [ text "Increment" ]
+        , button
+            [ onClick UL.Undo ]
+            [ text "Undo" ]
+        , div
+            []
+            [ text (toString model) ]
+        ]
 ```
 
 The code is almost *exactly* the same!
@@ -111,9 +111,9 @@ You can specify all the normal messages of your application with `New` but you n
 This becomes really powerful when paired with `update` which handles all of the `UndoList` messages seamlessly.
 
 ```elm
-update
-  : (msg -> model -> model)
-  -> (Msg msg -> UndoList model -> UndoList model)
+update :
+    (msg -> model -> model) ->
+    Msg msg -> UndoList model -> UndoList model
 ```
 
 This lets you write a normal `update` function and then upgrade it to a function that works on `UndoLists`.
