@@ -261,7 +261,7 @@ andMap =
     map2 (<|)
 
 
-{-| Apply a function only on the present.
+{-| Apply a function only to the present.
 -}
 mapPresent : (a -> a) -> UndoList a -> UndoList a
 mapPresent f { past, present, future } =

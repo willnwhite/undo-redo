@@ -96,7 +96,7 @@ view model =
 
 The code is almost *exactly* the same!
 
-When we start the app, we simply add a couple wrappers to handle all of the
+When we start the app, we simply add a couple of wrappers to handle all of the
 undo/redo functionality. Notice that the addition of the functions `UL.fresh`,
 `UL.view`, and `UL.update` is a totally mechanical augmentation.
 
@@ -113,7 +113,7 @@ the same!
 ## More Details
 
 This API is designed to work really nicely with [The Elm Architecture][arch] by
-exposing an `Msg` type that can easily be added to your existing ones:
+exposing a `Msg` type that can easily be added to your existing ones:
 
 [arch]: http://guide.elm-lang.org/architecture/index.html
 
