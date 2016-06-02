@@ -133,9 +133,7 @@ This becomes really powerful when paired with `update` which handles all of the
 `UndoList` messages seamlessly.
 
 ```elm
-update :
-    (msg -> model -> model) ->
-    Msg msg -> UndoList model -> UndoList model
+update : (msg -> model -> model) -> Msg msg -> UndoList model -> UndoList model
 ```
 
 This lets you write a normal `update` function and then upgrade it to

@@ -379,15 +379,16 @@ Suppose you define the following:
 
     initial : model
     update : msg -> model -> model
-    view : Address (UndoList.Msg msg) -> model -> view
-    address : Address (UndoList.Msg msg)
-    signal : Signal (UndoList.Msg msg)
+    view : model -> Html (UndoList.Msg msg)
 
 Then, you could construct the main function as follows:
 
     main =
-      Signal.map (UndoList.view view address)
-        (Signal.foldp (UndoList.update update) (UndoList.fresh initial) signal)
+        Html.beginnerProgram
+            { model = UndoList.fresh initial
+            , update = UndoList.update update
+            , view = UndoList.view view
+            }
 
 -}
 view : (state -> view) -> UndoList state -> view
