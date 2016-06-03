@@ -46,4 +46,3 @@ msg generator =
         , ( 6, constant Redo )
         , ( 6, map New generator )
         ]
-        (constant Reset)
