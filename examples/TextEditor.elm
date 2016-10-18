@@ -1,28 +1,77 @@
-module Main exposing (..)
+module TextEditor exposing (..)
 
 import Html exposing (Html)
 import Html.App as Html
 import Html.Events exposing (onInput, onClick)
 import Html.Attributes exposing (style, value, placeholder)
-import UndoList as UL exposing (Msg(..), UndoList)
+import UndoList exposing (UndoList)
+
+
+-- Main
+
+
+main : Program Never
+main =
+    Html.beginnerProgram
+        { model = init
+        , update = update
+        , view = view
+        }
+
+
+
+-- Model
+
+
+type alias Model =
+    UndoList { content : String }
+
+
+init : Model
+init =
+    UndoList.fresh { content = "" }
+
+
+
+-- Update
+
+
+type Msg
+    = UpdateContent String
+    | Undo
+    | Redo
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        UpdateContent str ->
+            UndoList.new { content = str } model
+
+        Undo ->
+            UndoList.undo model
+
+        Redo ->
+            UndoList.redo model
+
 
 
 -- View
 
 
-view : Model -> Html (UL.Msg Msg)
+view : Model -> Html Msg
 view model =
     let
-        button value =
+        button msg =
             Html.button
-                [ onClick value
+                [ onClick msg
                 , style
                     [ "width" => "8em"
                     , "height" => "3em"
                     , "font-size" => "14pt"
                     ]
                 ]
-                [ Html.text <| toString value ]
+                [ Html.text <| toString msg ]
 
         undoButton =
             button Undo
@@ -51,8 +100,8 @@ view model =
 
         textArea =
             Html.textarea
-                [ onInput (New << UpdateContent)
-                , value model.content
+                [ onInput UpdateContent
+                , value model.present.content
                 , placeholder "Enter text here..."
                 , style
                     [ "flex" => "1"
@@ -77,51 +126,6 @@ view model =
             [ headerArea
             , textArea
             ]
-
-
-
--- Model
-
-
-type alias Model =
-    { content : String }
-
-
-
--- The initial state of the entire application
-
-
-init : Model
-init =
-    { content = "" }
-
-
-
--- Update
-
-
-type Msg
-    = UpdateContent String
-
-
-update : Msg -> Model -> Model
-update msg model =
-    case msg of
-        UpdateContent str ->
-            { content = str }
-
-
-
--- Main
-
-
-main : Program Never
-main =
-    Html.beginnerProgram
-        { model = UL.fresh init
-        , update = UL.update update
-        , view = UL.view view
-        }
 
 
 

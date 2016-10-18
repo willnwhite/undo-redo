@@ -1,4 +1,4 @@
-# Undo in any Elm app
+# Undo/redo in any Elm app
 
 Add undo/redo to any Elm app with just a few lines of code!
 
@@ -17,10 +17,10 @@ The library is centered around a single data structure, the `UndoList`.
 
 ```elm
 type alias UndoList state =
-  { past    : List state
-  , present : state
-  , future  : List state
-  }
+    { past: List state
+    , present: state
+    , future: List state
+    }
 ```
 
 An `UndoList` contains a list of past states, a present state, and a list of
@@ -29,6 +29,8 @@ and redo become just a matter of sliding the present around a bit.
 
 
 ## Example
+
+### Initial counter app
 
 We will start with a very simple counter application. There is a button, and
 when it is clicked, a counter is incremented.
@@ -41,22 +43,35 @@ import Html.App as Html
 
 main =
     Html.beginnerProgram
-        { model = 0, view = view, update = update }
+        { model = 0
+        , view = view
+        , update = update
+        }
 
-update _ model =
-    model + 1
+type alias Model = Int
 
+type Msg = Increment
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Increment ->
+            model + 1
+
+view : Model -> Html Msg
 view model =
     div
         []
         [ button
-            [ onClick () ]
+            [ onClick Increment ]
             [ text "Increment" ]
         , div
             []
             [ text (toString model) ]
         ]
 ```
+
+### Adding undo
 
 Suppose that further down the line we decide it would be nice to have an undo
 button.
@@ -70,23 +85,40 @@ the original, and we will go into the differences afterwards.
 import Html exposing (div, button, text)
 import Html.Events exposing (onClick)
 import Html.App as Html
-import UndoList as UL
+import UndoList exposing (UndoList)
 
 main =
     Html.beginnerProgram
-        { model = UL.fresh 0, view = UL.view view, update = UL.update update }
+        { model = UndoList.fresh 0
+        , view = view
+        , update = update
+        }
 
-update _ model =
-    model + 1
+type alias Model
+    = UndoList Int
 
+type Msg
+    = Increment
+    | Undo
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Increment ->
+            UndoList.new (model.present + 1) model
+
+        Undo ->
+            UndoList.undo model
+
+view : Model -> Html Msg
 view model =
     div
         []
         [ button
-            [ onClick (UL.New ()) ]
+            [ onClick Increment ]
             [ text "Increment" ]
         , button
-            [ onClick UL.Undo ]
+            [ onClick Undo ]
             [ text "Undo" ]
         , div
             []
@@ -94,51 +126,26 @@ view model =
         ]
 ```
 
-The code is almost *exactly* the same!
+Here are the differences:
+- the `Model` type changed from `Int` to `UndoList Int`
+- the `Msg` type now has a new constructor `Undo`
+- the `update` function now cares for this new `Undo` message in the pattern matching
+- a `button` was added to the `view` function. It sends the `Undo` message
 
-When we start the app, we simply add a couple of wrappers to handle all of the
-undo/redo functionality. Notice that the addition of the functions `UL.fresh`,
-`UL.view`, and `UL.update` is a totally mechanical augmentation.
+Adding redo functionality is quite the same. You can find by yourself as an exercise, or look at the
+[counter example](./examples/Counter.elm).
 
-As for the actual code, we added another button to our view that reports an
-`Undo` message and we wrapped up the increment event with `New`. In other
-words, the bare essentials needed to describe the user facing functionality.
+### Usage with commands
 
-The crazy thing is that this same pattern will work no matter how large your
-app gets. You do not have to think about any nasty details of undo/redo. Just
-make a tiny number of additions and the vast majority of the code stays exactly
-the same!
+When you use `Html.App.program` instead of `Html.App.beginnerProgram` as above, you can use commands
+in your `update` function.
 
+Look at the [counter with cats example](./examples/CounterWithCats.elm) which loads a GIF image whenever you increment
+the counter, with undo/redo even with asynchronous operations.
 
 ## More Details
 
-This API is designed to work really nicely with [The Elm Architecture][arch] by
-exposing a `Msg` type that can easily be added to your existing ones:
+This API is designed to work really nicely with
+[The Elm Architecture](http://guide.elm-lang.org/architecture/index.html).
 
-[arch]: http://guide.elm-lang.org/architecture/index.html
-
-```elm
-type Msg subMsg
-    = Reset
-    | Redo
-    | Undo
-    | Forget
-    | New subMsg
-```
-
-You can specify all the normal messages of your application with `New` but you
-now have `Undo`, `Redo`, etc.
-
-This becomes really powerful when paired with `update` which handles all of the
-`UndoList` messages seamlessly.
-
-```elm
-update : (msg -> model -> model) -> Msg msg -> UndoList model -> UndoList model
-```
-
-This lets you write a normal `update` function and then upgrade it to
-a function that works on `UndoLists`.
-
-The API has a lot more cool stuff, so [check it out][docs].
-
-[docs]: http://package.elm-lang.org/packages/elm-community/undo-redo/latest
+It has a lot more cool stuff, so read the [docs](http://package.elm-lang.org/packages/elm-community/undo-redo/latest).

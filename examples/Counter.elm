@@ -1,65 +1,61 @@
-module Main exposing (..)
+module Counter exposing (..)
 
 import Html exposing (..)
 import Html.App as Html
 import Html.Events exposing (onClick)
-import UndoList as UL exposing (UndoList, Msg(..))
+import UndoList exposing (UndoList)
+import Html exposing (div, button, text)
+import Html.Events exposing (onClick)
+import Html.App as Html
+import UndoList exposing (UndoList)
 
 
--------------------------------
--- Version with undo support --
--------------------------------
-
-
-init =
-    0
-
-
-update _ state =
-    state + 1
-
-
-view state =
-    div []
-        [ button [ onClick (New ()) ] [ text "Increment" ]
-        , button [ onClick Undo ] [ text "Undo" ]
-        , button [ onClick Redo ] [ text "Redo" ]
-        , div [] [ text (toString state) ]
-        ]
-
-
+main : Program Never
 main =
     Html.beginnerProgram
-        { model = UL.fresh init
-        , update = UL.update update
-        , view = UL.view view
-        }
-
-
-
-----------------------------------
--- Version without undo support --
-----------------------------------
-{--
-init =
-    0
-
-
-update _ state =
-    state + 1
-
-
-view state =
-    div []
-        [ button [ onClick () ] [ text "Increment" ]
-        , div [] [ text (toString state) ]
-        ]
-
-
-main =
-    Html.beginnerProgram
-        { model = init
-        , update = update
+        { model = UndoList.fresh 0
         , view = view
+        , update = update
         }
---}
+
+
+type alias Model =
+    UndoList Int
+
+
+type Msg
+    = Increment
+    | Undo
+    | Redo
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Increment ->
+            UndoList.new (model.present + 1) model
+
+        Undo ->
+            UndoList.undo model
+
+        Redo ->
+            UndoList.redo model
+
+
+view : Model -> Html Msg
+view model =
+    div
+        []
+        [ button
+            [ onClick Increment ]
+            [ text "Increment" ]
+        , button
+            [ onClick Undo ]
+            [ text "Undo" ]
+        , button
+            [ onClick Redo ]
+            [ text "Redo" ]
+        , div
+            []
+            [ text (toString model) ]
+        ]
