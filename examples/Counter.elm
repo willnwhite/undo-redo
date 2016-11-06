@@ -1,16 +1,11 @@
 module Counter exposing (..)
 
-import Html exposing (..)
-import Html.App as Html
-import Html.Events exposing (onClick)
 import UndoList exposing (UndoList)
-import Html exposing (div, button, text)
+import Html exposing (Html, div, button, text)
 import Html.Events exposing (onClick)
-import Html.App as Html
-import UndoList exposing (UndoList)
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = UndoList.fresh 0
@@ -44,18 +39,13 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div
-        []
-        [ button
-            [ onClick Increment ]
+    div []
+        [ button [ onClick Increment ]
             [ text "Increment" ]
-        , button
-            [ onClick Undo ]
+        , button [ onClick Undo ]
             [ text "Undo" ]
-        , button
-            [ onClick Redo ]
+        , button [ onClick Redo ]
             [ text "Redo" ]
-        , div
-            []
+        , div []
             [ text (toString model) ]
         ]

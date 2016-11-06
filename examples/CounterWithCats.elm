@@ -1,20 +1,15 @@
 module CounterWithCats exposing (..)
 
-import Html exposing (..)
-import Html.App as Html
+import Html exposing (Html, div, button, img, text)
 import Html.Attributes exposing (src)
 import Html.Events exposing (onClick)
-import UndoList exposing (UndoList)
-import Html exposing (div, button, text)
-import Html.Events exposing (onClick)
-import Html.App as Html
 import UndoList exposing (UndoList)
 import Http
 import Task
 import Json.Decode as Json
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     Html.program
         { init = init
@@ -35,8 +30,7 @@ type Msg
     = Increment
     | Undo
     | Redo
-    | FetchSucceed String
-    | FetchFail Http.Error
+    | OnFetch (Result Http.Error String)
 
 
 init : ( Model, Cmd msg )
@@ -50,8 +44,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg ({ present } as model) =
     case msg of
         Increment ->
-            ( UndoList.new
-                { present | counter = present.counter + 1 }
+            ( UndoList.new { present | counter = present.counter + 1 }
                 model
             , getRandomGif "cats"
             )
@@ -62,35 +55,28 @@ update msg ({ present } as model) =
         Redo ->
             ( UndoList.redo model, Cmd.none )
 
-        FetchSucceed newUrl ->
-            ( UndoList.mapPresent
-                (\present -> { present | gifUrl = Just newUrl })
+        OnFetch (Ok newUrl) ->
+            ( UndoList.mapPresent (\present -> { present | gifUrl = Just newUrl })
                 model
             , Cmd.none
             )
 
-        FetchFail _ ->
+        OnFetch (Err _) ->
             ( model, Cmd.none )
 
 
 view : Model -> Html Msg
 view model =
-    div
-        []
-        [ button
-            [ onClick Increment ]
+    div []
+        [ button [ onClick Increment ]
             [ text "Increment" ]
-        , button
-            [ onClick Undo ]
+        , button [ onClick Undo ]
             [ text "Undo" ]
-        , button
-            [ onClick Redo ]
+        , button [ onClick Redo ]
             [ text "Redo" ]
-        , div
-            []
+        , div []
             [ text (toString model.present.counter) ]
-        , div
-            []
+        , div []
             (case model.present.gifUrl of
                 Just gifUrl ->
                     [ img [ src gifUrl ] [] ]
@@ -111,7 +97,8 @@ getRandomGif topic =
         url =
             "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
     in
-        Task.perform FetchFail FetchSucceed (Http.get decodeGifUrl url)
+        Http.get url decodeGifUrl
+            |> Http.send OnFetch
 
 
 decodeGifUrl : Json.Decoder String

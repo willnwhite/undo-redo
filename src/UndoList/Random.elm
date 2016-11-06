@@ -9,8 +9,7 @@ Provides random undolist and undolist msg generators.
 -}
 
 import UndoList exposing (UndoList, Msg(..))
-import Random exposing (Generator, list, map, map3)
-import Random.Extra exposing (frequency, constant)
+import Random.Pcg as Random exposing (Generator)
 
 
 {-| Random UndoList Generator constructor.
@@ -21,10 +20,10 @@ generate a random undolist of states.
 -}
 undolist : Int -> Int -> Generator state -> Generator (UndoList state)
 undolist pastLength futureLength generator =
-    map3 UndoList
-        (list pastLength generator)
+    Random.map3 UndoList
+        (Random.list pastLength generator)
         (generator)
-        (list futureLength generator)
+        (Random.list futureLength generator)
 
 
 {-| Generate random undolist msgs given an msg generator.
@@ -39,10 +38,10 @@ Generates msgs with the following probabilities:
 -}
 msg : Generator msg -> Generator (Msg msg)
 msg generator =
-    frequency
-        [ ( 1, constant Reset )
-        , ( 1, constant Forget )
-        , ( 6, constant Undo )
-        , ( 6, constant Redo )
-        , ( 6, map New generator )
+    Random.frequency
+        [ ( 1, Random.constant Reset )
+        , ( 1, Random.constant Forget )
+        , ( 6, Random.constant Undo )
+        , ( 6, Random.constant Redo )
+        , ( 6, Random.map New generator )
         ]

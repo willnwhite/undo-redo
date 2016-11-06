@@ -214,8 +214,8 @@ mapMsg f msg =
         Forget ->
             Forget
 
-        New msg' ->
-            New (f msg')
+        New newMsg ->
+            New (f newMsg)
 
 
 
@@ -254,11 +254,13 @@ map2 f undoListA undoListB =
 
 {-| Map a function over any number of undo-lists.
 
-    map f xs `andMap` ys `andMap` zs
+    map f xs
+        |> andMap ys
+        |> andMap zs
 -}
-andMap : UndoList (a -> b) -> UndoList a -> UndoList b
+andMap : UndoList a -> UndoList (a -> b) -> UndoList b
 andMap =
-    map2 (<|)
+    flip (map2 (<|))
 
 
 {-| Apply a function only to the present.
@@ -351,11 +353,11 @@ flatMap f =
     map f >> flatten
 
 
-{-| Chain undo-list operations.
+{-| Chain undo-list operations. This is simply an alias of `flatMap`
 -}
-andThen : UndoList a -> (a -> UndoList b) -> UndoList b
+andThen : (a -> UndoList b) -> UndoList a -> UndoList b
 andThen =
-    flip flatMap
+    flatMap
 
 
 {-| Connect two undo-lists end to end. The present of the first undolist is

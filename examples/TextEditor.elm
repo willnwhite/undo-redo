@@ -1,16 +1,15 @@
 module TextEditor exposing (..)
 
 import Html exposing (Html)
-import Html.App as Html
-import Html.Events exposing (onInput, onClick)
-import Html.Attributes exposing (style, value, placeholder)
+import Html.Events as Event
+import Html.Attributes as Attr
 import UndoList exposing (UndoList)
 
 
 -- Main
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = init
@@ -64,8 +63,8 @@ view model =
     let
         button msg =
             Html.button
-                [ onClick msg
-                , style
+                [ Event.onClick msg
+                , Attr.style
                     [ "width" => "8em"
                     , "height" => "3em"
                     , "font-size" => "14pt"
@@ -81,13 +80,13 @@ view model =
 
         title =
             Html.span
-                [ style [ "font-size" => "16pt" ]
+                [ Attr.style [ "font-size" => "16pt" ]
                 ]
                 [ Html.text "Simple Text Area with Undo/Redo support" ]
 
         headerArea =
             Html.div
-                [ style
+                [ Attr.style
                     [ "display" => "flex"
                     , "justify-content" => "space-between"
                     , "align-items" => "center"
@@ -100,10 +99,10 @@ view model =
 
         textArea =
             Html.textarea
-                [ onInput UpdateContent
-                , value model.present.content
-                , placeholder "Enter text here..."
-                , style
+                [ Event.onInput UpdateContent
+                , Attr.value model.present.content
+                , Attr.placeholder "Enter text here..."
+                , Attr.style
                     [ "flex" => "1"
                     , "font-size" => "24pt"
                     , "font-family" => "Helvetica Neue, Helvetica, Arial, sans-serif"
@@ -113,7 +112,7 @@ view model =
                 []
     in
         Html.div
-            [ style
+            [ Attr.style
                 [ "position" => "absolute"
                 , "margin" => "0"
                 , "padding" => "0"

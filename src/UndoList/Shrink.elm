@@ -9,7 +9,7 @@ Provides shrinking strategies for timelines and messages.
 
 -}
 
-import Shrink exposing (Shrinker, list)
+import Shrink exposing (Shrinker)
 import UndoList exposing (UndoList, Msg(..))
 import Lazy.List as Lazy exposing (LazyList)
 
@@ -21,11 +21,11 @@ undolist shrinker { past, present, future } =
     let
         --pasts : LazyList (List state)
         pasts =
-            list shrinker past
+            Shrink.list shrinker past
 
         --futures : LazyList (List state)
         futures =
-            list shrinker future
+            Shrink.list shrinker future
 
         --presents : LazyList state
         presents =
@@ -50,8 +50,8 @@ undolist shrinker { past, present, future } =
 Considers `Reset` to be most minimal.
 -}
 msg : Shrinker msg -> Shrinker (Msg msg)
-msg shrinker msg' =
-    case msg' of
+msg shrinker msg =
+    case msg of
         Reset ->
             Lazy.empty
 
@@ -64,9 +64,9 @@ msg shrinker msg' =
         Redo ->
             Lazy.fromList [ Undo, Forget, Reset ]
 
-        New msg' ->
+        New newMsg ->
             let
                 head =
                     Lazy.fromList <| [ Undo, Redo, Forget, Reset ]
             in
-                Lazy.append head (Lazy.map New (shrinker msg'))
+                Lazy.append head (Lazy.map New (shrinker newMsg))
