@@ -9,7 +9,8 @@ Provides random undolist and undolist msg generators.
 -}
 
 import UndoList exposing (UndoList, Msg(..))
-import Random.Pcg as Random exposing (Generator)
+import Random exposing (Generator)
+import Random.Extra as Random
 
 
 {-| Random UndoList Generator constructor.

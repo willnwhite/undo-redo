@@ -1,6 +1,6 @@
 module UndoListSuite exposing (tests)
 
-import Check exposing (Claim, suite, claim, that, is, for, true)
+import Check exposing (Claim, suite, claim)
 import Check.Producer exposing (int, tuple)
 import Json.Encode as Encode exposing (Value)
 import Json.Decode as Decode exposing (Decoder, decodeValue)
@@ -33,88 +33,88 @@ tests =
 claim_encode_decode_inverse : Claim
 claim_encode_decode_inverse =
     claim "Encoding and decoding are inverse operations"
-        `that` encode_then_decode Encode.int Decode.int
-        `is` Ok
-        `for` Producer.undolist int
+        |> that (encode_then_decode Encode.int Decode.int)
+        |> is Ok
+        |> for (Producer.undolist int)
 
 
 claim_undolist_length_atleastone : Claim
 claim_undolist_length_atleastone =
     claim "The length of an undo list is at least one"
-        `true` (\undolist -> UndoList.length undolist >= 1)
-        `for` Producer.undolist int
+        |> true (\undolist -> UndoList.length undolist >= 1)
+        |> for (Producer.undolist int)
 
 
 claim_redo_does_not_change_length : Claim
 claim_redo_does_not_change_length =
     claim "Redo does not change the length of an undo list"
-        `that` (UndoList.redo >> UndoList.length)
-        `is` UndoList.length
-        `for` Producer.undolist int
+        |> that (UndoList.redo >> UndoList.length)
+        |> is UndoList.length
+        |> for (Producer.undolist int)
 
 
 claim_undo_does_not_change_length : Claim
 claim_undo_does_not_change_length =
     claim "Undo does change the length of an undo list"
-        `that` (UndoList.undo >> UndoList.length)
-        `is` UndoList.length
-        `for` Producer.undolist int
+        |> that (UndoList.undo >> UndoList.length)
+        |> is UndoList.length
+        |> for (Producer.undolist int)
 
 
 claim_forget_produces_empty_past : Claim
 claim_forget_produces_empty_past =
     claim "After forgetting the past, the past of the undo list is empty"
-        `that` (UndoList.forget >> UndoList.lengthPast)
-        `is` always 0
-        `for` Producer.undolist int
+        |> that (UndoList.forget >> UndoList.lengthPast)
+        |> is (always 0)
+        |> for (Producer.undolist int)
 
 
 claim_new_produces_empty_future : Claim
 claim_new_produces_empty_future =
     claim "Adding a new state yields an empty future"
-        `that` (\( v, undolist ) -> UndoList.new v undolist |> UndoList.lengthFuture)
-        `is` always 0
-        `for` tuple ( int, Producer.undolist int )
+        |> that (\( v, undolist ) -> UndoList.new v undolist |> UndoList.lengthFuture)
+        |> is (always 0)
+        |> for (tuple ( int, Producer.undolist int ))
 
 
 claim_new_adds_one_length_past : Claim
 claim_new_adds_one_length_past =
     claim "Adding a new state adds one element to the past"
-        `that` (\( v, undolist ) -> UndoList.new v undolist |> UndoList.lengthPast)
-        `is` (\( _, undolist ) -> UndoList.lengthPast undolist + 1)
-        `for` tuple ( int, Producer.undolist int )
+        |> that (\( v, undolist ) -> UndoList.new v undolist |> UndoList.lengthPast)
+        |> is (\( _, undolist ) -> UndoList.lengthPast undolist + 1)
+        |> for (tuple ( int, Producer.undolist int ))
 
 
 claim_undo_redo_inverse : Claim
 claim_undo_redo_inverse =
     claim "Undo and redo are inverse operations"
-        `that` undo_redo
-        `is` identity
-        `for` Producer.undolist int
+        |> that undo_redo
+        |> is identity
+        |> for (Producer.undolist int)
 
 
 claim_redo_undo_inverse : Claim
 claim_redo_undo_inverse =
     claim "Redo and undo are inverse operations"
-        `that` redo_undo
-        `is` identity
-        `for` Producer.undolist int
+        |> that redo_undo
+        |> is identity
+        |> for (Producer.undolist int)
 
 
 claim_new_then_undo_yields_same_present : Claim
 claim_new_then_undo_yields_same_present =
     claim "Calling new then undo preserves the original present state"
-        `that` (\( v, undolist ) -> UndoList.new v undolist |> UndoList.undo |> .present)
-        `is` (\( _, undolist ) -> undolist.present)
-        `for` tuple ( int, Producer.undolist int )
+        |> that (\( v, undolist ) -> UndoList.new v undolist |> UndoList.undo |> .present)
+        |> is (\( _, undolist ) -> undolist.present)
+        |> for (tuple ( int, Producer.undolist int ))
 
 
 claim_reset_equivalent_fresh_oldest : Claim
 claim_reset_equivalent_fresh_oldest =
     claim "Resetting an undo list is equivalent to creating an undo list with the oldest state"
-        `that` UndoList.reset
-        `is` fresh_oldest
-        `for` Producer.undolist int
+        |> that UndoList.reset
+        |> is fresh_oldest
+        |> for (Producer.undolist int)
 
 
 
@@ -160,3 +160,23 @@ fresh_oldest undolist =
         |> List.head
         |> Maybe.withDefault undolist.present
         |> UndoList.fresh
+
+
+
+-- COMPATIBILITY
+
+
+that =
+    flip Check.that
+
+
+true =
+    flip Check.true
+
+
+is =
+    flip Check.is
+
+
+for =
+    flip Check.for

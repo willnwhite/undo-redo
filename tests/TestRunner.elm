@@ -1,13 +1,13 @@
 module Main exposing (..)
 
-import ElmTest
+import Legacy.ElmTest as ElmTest
 import Check exposing (Claim, Evidence, suite, claim, that, is, for, quickCheck)
 import Check.Test
 import UndoListSuite
 import StateMachineSuite
 
 
-main : Program Never
+main : Program Never () msg
 main =
     ElmTest.runSuite
         <| Check.Test.evidenceToTest evidence

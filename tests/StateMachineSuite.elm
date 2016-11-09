@@ -1,6 +1,6 @@
 module StateMachineSuite exposing (..)
 
-import Check exposing (Claim, suite, claim, that, is, for)
+import Check exposing (Claim, suite, claim)
 import Check.Producer exposing (int, tuple, list)
 import UndoList exposing (UndoList, Msg(..))
 import Test.Producer.UndoList as Producer
@@ -20,9 +20,9 @@ tests =
 claim_state_machine_length : Claim
 claim_state_machine_length =
     claim "State Machine is consistent with respect to length"
-        `that` state_machine_update
-        `is` state_machine_step
-        `for` tuple ( list (Producer.msg int), Producer.undolist int )
+        |> that state_machine_update
+        |> is state_machine_step
+        |> for (tuple ( list (Producer.msg int), Producer.undolist int ))
 
 
 
@@ -96,3 +96,19 @@ pipe state msgs =
 
         f :: fs ->
             state :: pipe (f state) fs
+
+
+
+-- COMPATIBILITY
+
+
+for =
+    flip Check.for
+
+
+is =
+    flip Check.is
+
+
+that =
+    flip Check.that
